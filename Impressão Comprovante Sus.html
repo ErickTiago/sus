@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Impressão do Comprovante do Cartão do SUS</title>
+  <link rel="icon" type="image/x-icon" href="sus.ico">
+  <script src="index.js"></script>
+  <script src="barCode.js"></script>
+</head>
+<body>
+  <div id="main" style="display: block;">
+  <h2>Impressão do Comprovante do Cartão do SUS</h2>
+    <div class="caixaRecuada" id="form">
+      <h3 class="tituloFormConsulta">Preencha os campos abaixo com os dados solicitados.</h3>
+      <div id="fildForm">
+        <div id="formEsquerda">
+          <div class="labelNome">
+            <label for="id_nome" title="Informe o Nome.">Nome:</label>
+            <input
+              type="text"
+              name="txtNome"
+              id="id_nome"
+              size="32"
+              maxlength="60"
+              title="Informe o nome completo."
+              autocomplete="off"
+              tabindex="1"
+              onblur="javascript: this.value = this.value.toUpperCase();"
+              value=""
+            >
+            <br>
+            <label for="id_datanascimento" title="Informe a data de nascimento, com dois dígitos para o DIA e para o MÊS e quatro dígitos para o ANO. Formato: ddmmaaaa.">Data de Nascimento:</label>
+            <input
+              type="text"
+              name="txtDataNascimento"
+              id="id_datanascimento"
+              size="32" maxlength="8"
+              title="Informe a data de nascimento, com dois dígitos para o DIA e para o MÊS e quatro dígitos para o ANO. Formato: ddmmaaaa."
+              onkeypress="javascript: return ajustar_numero(this, event);"
+              onblur="javascript: formatarData(this.id, this.value);"
+              onfocus="removeMask(this.id, this.value)"
+              autocomplete="off"
+              tabindex="2"
+              value=""
+            >
+            <br>
+            <label for="id_sexo"title="Informe o sexo.">Sexo:</label>
+            <select
+              name="txtSexo"
+              id="id_sexo"
+              maxlength="13"
+              title="Informe o sexo."
+              autocomplete="off"
+              tabindex="3"
+              value=""
+            >
+              <option></option>
+              <option>F</option>
+              <option>M</option>
+            </select>
+            <br>
+            <label for="id_numero" title="Informe o número do cartão do SUS.">Número do Cartão:</label>
+            <input
+              type="text"
+              name="txtNumero"
+              id="id_numero"
+              maxlength="15"
+              size="32"
+              title="Informe o número do cartão do SUS."
+              onkeypress="javascript: return ajustar_numero(this, event);"
+              autocomplete="off"
+              tabindex="4"
+              value=""
+            >
+            <br>
+            <label for="id_numero" title="Informe o número completo do cartão do SUS.">Número Completo do Cartão:</label>
+            <input
+              type="text"
+              name="txtNumeroCompleto"
+              id="id_numerocompleto"
+              maxlength="26"
+              size="32"
+              title="Informe o número completo do cartão do SUS."
+              onkeypress="javascript: return ajustar_numero(this, event);"
+              autocomplete="off"
+              tabindex="5"
+              value=""
+            >
+            <br>
+          </div>
+        </div>
+      </div>
+      <input
+        id="idButtonLimpar"
+        name="Limpar"
+        type="button"
+        class="botoes"
+        value="Limpar"
+        tabindex="6"
+        style="height: 23px; text-transform: capitalize"
+        onclick="javascript: limpar()"
+      >
+      <input
+        id="idButtonEnviar"
+        name="Enviar"
+        type="button"
+        class="botoes"
+        value="Enviar"
+        tabindex="7"
+        style="height:23px; text-transform:capitalize"
+        onclick="javascript: ValidarDados()"
+      >
+    </div>
+  </div>
+  <div id="image">
+    <figure id="container">
+      <img src="./sus.jpeg" />
+      <nome id="form_nome"></nome>
+      <data id="form_data"></data>
+      <sexo id="form_sexo"></sexo>
+      <numero id="form_numero"></numero>
+      <svg id="barcode" class="code"></svg>
+    </figure>
+    <br>
+    <input
+        id="idButtonVoltar"
+        name="Voltar"
+        type="button"
+        class="botoes"
+        value="Voltar"
+        tabindex="8"
+        style="height:23px; text-transform:capitalize"
+        onclick="javascript: voltar()"
+      >
+    </div>
+  </div>
+</body>
+<style>
+  body {
+    margin: 0 auto;
+    padding: 0 0 1.5em;
+    max-width: 960px;
+    background: #fff;
+    font-size: 1.3em;
+  }
+  #image {
+    display: none;
+  }
+  br {
+    clear: left;
+  }
+  h2 {
+    padding-left: 18px;
+    margin: 0 0 0.5em 0;
+    line-height: 1.3em;
+    color: #231f20;
+    font-family: "open_sansbold", Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    letter-spacing: -0.05em;
+    padding: 0;
+    list-style: none;
+    vertical-align: baseline;
+    background: transparent url(../img/bullet-n2.png) no-repeat left center;
+    padding-left: 18px;
+  }
+  #main .caixaRecuada {
+    border-bottom: 1px solid #A3B3Ca;
+    border-left: 1px solid #A3B3Ca;
+    border-right: 1px solid #A3B3Ca;
+    display: table;
+    padding-bottom: 5px;
+    width: 750px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    vertical-align: baseline;
+    line-height: 1.6em;
+    font-size: 80%;
+  }
+  #main .tituloFormConsulta {
+    background-color: #e7eff7;
+    border-top: 1px solid #A3B3Ca;
+    border-bottom: 1px solid #A3B3Ca;
+    color: #24498a;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    margin: 0;
+    padding: 3px 3px 3px 5px;
+  }
+  #main #fildForm {
+    background: #f0f1f4;
+    border-bottom-style: none;
+    border-left-style: none;
+    border-right-style: none;
+    display: table;
+    padding-top: 16px;
+    width: 100%;
+    padding-bottom: 14px;
+  }
+  #main #formEsquerda {
+    float: left;
+    width: 650px;
+  }
+  #main .labelNome {
+    background:#f0f1f4;
+    border-bottom-style:none;
+    border-left-style:none;
+    border-right-style:none;
+    display:table;
+    padding-top:16px;
+    width:100%;
+    padding-bottom: 14px;
+  }
+  #main label {
+    display: block;
+    font-weight: bold;
+    text-align: right;
+    float: left;
+    margin-top: 6px;
+    margin-bottom: 4px;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    color: #24498a;
+    width: 180px;
+  }
+  #main #id_nome {
+    width: 450px
+  }
+  #main #id_numerocompleto {
+    width: 250px
+  }
+  input {
+    border: 1px solid #5c9ecf;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    height: 20px;
+    float: left;
+    display: block;
+    padding-left: 5px;
+    float: left;
+    display: block;
+    margin: 5px 4px 4px 4px;
+    text-transform: uppercase;
+    width: 165px;
+  }
+  select {
+    border: 1px solid #5c9ecf;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    height: 24px;
+    float: left;
+    display: block;
+    padding-left: 5px;
+    float: left;
+    display: block;
+    margin: 5px 4px 4px 4px;
+    text-transform: uppercase;
+    width: 174px;
+  }
+  input[type="button"] {
+    background: #3E67B1;
+    padding: 5px 10px;
+    color: #fff;
+    border: none;
+    margin-right: 5px;
+  }
+  .botoes {
+    display: block;
+    float: right;
+    margin-top: 15px;
+    cursor: pointer;
+  }
+
+  #container {
+  display: inline-block;
+  position: relative;
+}
+
+#container nome {
+  position: absolute;
+  top: 80px;
+  left: 570px;
+  font-size: 15px;
+  color: black;
+  font-family:courier, courier new, serif;
+  font-weight: bold;
+}
+#container data {
+  position: absolute;
+  top: 110px;
+  left: 570px;
+  font-size: 13px;
+  color: black;
+  font-family:courier, courier new, serif;
+  font-weight: bold;
+}
+#container sexo {
+  position: absolute;
+  top: 110px;
+  left: 790px;
+  font-size: 13px;
+  color: black;
+  font-family:courier, courier new, serif;
+  font-weight: bold;
+}
+#container numero {
+  position: absolute;
+  top: 130px;
+  left: 570px;
+  font-size: 27px;
+  color: black;
+  font-family:courier, courier new, serif;
+  font-weight: bold;
+}
+.code {
+  position: absolute;
+  top: 160px;
+  left: 565px;
+}
+</style>
+</html>
